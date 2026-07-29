@@ -1,0 +1,8 @@
+Revenue Prediction Model - Training Report
+=============================================
+Rows used for training : 100
+Train/Test split       : 80/20
+R2 Score                : -0.1218
+MAE                     : 2666.3970
+RMSE                    : 3002.4843
+Feature count (encoded) : 27

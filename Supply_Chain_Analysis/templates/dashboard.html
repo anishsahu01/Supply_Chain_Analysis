@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supply Chain Analytics &amp; Revenue Prediction Dashboard</title>
+
+<!-- Bootstrap grid (optional, used only for responsive utility classes) -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- Plotly -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.32.0/plotly.min.js"></script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Animated background orbs -->
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+
+<div class="app-shell">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-chart-network"></i></div>
+      <div>
+        <h1>Supply Chain Analytics</h1>
+        <p>Revenue Prediction &amp; Operations Intelligence Dashboard</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="live-dot"></span>
+      <span id="rowCountBadge">{{ kpis.total_products }} SKUs Loaded</span>
+    </div>
+  </header>
+
+  <!-- ===================== FILTER BAR ===================== -->
+  <section class="glass-panel filter-bar">
+    <div class="filter-group">
+      <label><i class="fa-solid fa-box"></i> Product Type</label>
+      <select id="f_product_type" class="filter-select">
+        <option value="All">All Product Types</option>
+        {% for opt in filter_options['Product type'] %}
+        <option value="{{ opt }}">{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label><i class="fa-solid fa-industry"></i> Supplier Name</label>
+      <select id="f_supplier_name" class="filter-select">
+        <option value="All">All Suppliers</option>
+        {% for opt in filter_options['Supplier name'] %}
+        <option value="{{ opt }}">{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label><i class="fa-solid fa-location-dot"></i> Location</label>
+      <select id="f_location" class="filter-select">
+        <option value="All">All Locations</option>
+        {% for opt in filter_options['Location'] %}
+        <option value="{{ opt }}">{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label><i class="fa-solid fa-truck-fast"></i> Shipping Carrier</label>
+      <select id="f_shipping_carrier" class="filter-select">
+        <option value="All">All Carriers</option>
+        {% for opt in filter_options['Shipping carriers'] %}
+        <option value="{{ opt }}">{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label><i class="fa-solid fa-route"></i> Transportation Mode</label>
+      <select id="f_transportation_mode" class="filter-select">
+        <option value="All">All Modes</option>
+        {% for opt in filter_options['Transportation modes'] %}
+        <option value="{{ opt }}">{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button id="resetFiltersBtn" class="reset-btn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+  </section>
+
+  <!-- ===================== KPI CARDS ===================== -->
+  <section class="kpi-grid">
+    <div class="kpi-card" style="--accent:#7c3aed;">
+      <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+      <div class="kpi-content">
+        <span class="kpi-label">Total Revenue</span>
+        <span class="kpi-value" id="kpi_total_revenue" data-value="{{ kpis.total_revenue }}">₹0</span>
+      </div>
+      <div class="kpi-glow"></div>
+    </div>
+
+    <div class="kpi-card" style="--accent:#06b6d4;">
+      <div class="kpi-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+      <div class="kpi-content">
+        <span class="kpi-label">Total Sales</span>
+        <span class="kpi-value" id="kpi_total_sales" data-value="{{ kpis.total_sales }}">0</span>
+      </div>
+      <div class="kpi-glow"></div>
+    </div>
+
+    <div class="kpi-card" style="--accent:#f43f5e;">
+      <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="kpi-content">
+        <span class="kpi-label">Avg Defect Rate</span>
+        <span class="kpi-value" id="kpi_defect_rate" data-value="{{ kpis.avg_defect_rate }}">0%</span>
+      </div>
+      <div class="kpi-glow"></div>
+    </div>
+
+    <div class="kpi-card" style="--accent:#22c55e;">
+      <div class="kpi-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+      <div class="kpi-content">
+        <span class="kpi-label">Total Products</span>
+        <span class="kpi-value" id="kpi_total_products" data-value="{{ kpis.total_products }}">0</span>
+      </div>
+      <div class="kpi-glow"></div>
+    </div>
+
+    <div class="kpi-card" style="--accent:#f59e0b;">
+      <div class="kpi-icon"><i class="fa-solid fa-ship"></i></div>
+      <div class="kpi-content">
+        <span class="kpi-label">Avg Shipping Cost</span>
+        <span class="kpi-value" id="kpi_shipping_cost" data-value="{{ kpis.avg_shipping_cost }}">₹0</span>
+      </div>
+      <div class="kpi-glow"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PREDICTION PANEL ===================== -->
+  <section class="glass-panel prediction-panel">
+    <div class="prediction-left">
+      <h2><i class="fa-solid fa-wand-magic-sparkles"></i> AI Revenue Prediction</h2>
+      <p>Prediction is generated automatically from your selected filters above — no manual input required. The model uses historical averages for the selected combination as input to a trained RandomForestRegressor.</p>
+      <button id="predictBtn" class="predict-btn">
+        <i class="fa-solid fa-bolt"></i> Predict Revenue for Current Selection
+      </button>
+    </div>
+    <div class="prediction-right">
+      <div class="prediction-result-card" id="predictionCard">
+        <span class="pr-label">Predicted Revenue</span>
+        <span class="pr-value" id="predictionValue">—</span>
+        <span class="pr-sub" id="predictionSub">Select filters and click Predict</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CHARTS GRID ===================== -->
+  <section class="charts-grid">
+    <div class="glass-panel chart-card">
+      <div id="chart_revenue_by_product" class="chart-box"></div>
+    </div>
+    <div class="glass-panel chart-card">
+      <div id="chart_sales_trend" class="chart-box"></div>
+    </div>
+    <div class="glass-panel chart-card">
+      <div id="chart_supplier_performance" class="chart-box"></div>
+    </div>
+    <div class="glass-panel chart-card">
+      <div id="chart_inventory_levels" class="chart-box"></div>
+    </div>
+    <div class="glass-panel chart-card">
+      <div id="chart_defect_rate" class="chart-box"></div>
+    </div>
+    <div class="glass-panel chart-card">
+      <div id="chart_shipping_cost" class="chart-box"></div>
+    </div>
+  </section>
+
+  <footer class="app-footer">
+    <p>Supply Chain Analytics &amp; Revenue Prediction Dashboard &middot; Built with Python, Flask, Scikit-learn &amp; Plotly</p>
+  </footer>
+
+</div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<script>
+  // Initial chart payload rendered server-side on first load
+  const INITIAL_CHARTS = {{ charts | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
