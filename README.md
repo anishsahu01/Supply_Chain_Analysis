@@ -1,4 +1,4 @@
-# 📦 Supply Chain Analysis & Revenue Prediction Dashboard
+# 📦 Supply Chain Analysis
 
 An end-to-end **Supply Chain Analytics project** that uses Machine Learning and Data Visualization to analyze supply chain performance and predict revenue. The project includes a Flask-based interactive dashboard where users can explore insights and generate predictions.
 
