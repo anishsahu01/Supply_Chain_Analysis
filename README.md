@@ -249,7 +249,7 @@ The project uses a supply chain dataset containing information related to:
 
 ## 👨‍💻 Author
 
-**Anish Sahu**
+**Anish Kumar Gupta**
 
 Data Analyst | Python | Machine Learning | Data Visualization
 
